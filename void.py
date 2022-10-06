@@ -1,0 +1,43 @@
+import os
+import copy
+import numpy as np
+import pickle
+from pymatgen.core.structure import Structure
+from pymatgen.core.periodic_table import Element
+import itertools
+
+
+
+
+struc = Structure.from_file("CONTCAR")
+struc1 = Structure.from_file("CONTCAR")
+lattice = struc.lattice.matrix
+
+number = 0
+count = 0
+mesh = 0.2
+dis = 1.9
+
+dx=int((struc.lattice.a)/mesh)
+dy=int((struc.lattice.b)/mesh)
+dz=int((struc.lattice.c)/mesh)
+
+
+
+for k in range(0,dx):
+ for l in range(0,dy):
+  for m in range(0,dz):
+
+        pt = k*(1/dx)*lattice[0]+l*(1/dy)*lattice[1]+m*(1/dz)*lattice[2]
+        count = count + 1
+
+        if len(struc.get_sites_in_sphere(pt,dis)) == 0 :
+           number = number + 1
+           struc1.append("3",(pt[0],pt[1],pt[2]),coords_are_cartesian=True)
+
+
+struc1.to("poscar",'POSCAR-xx')
+
+
+ratio=number/count
+print(ratio)
